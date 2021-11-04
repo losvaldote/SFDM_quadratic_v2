@@ -1,0 +1,130 @@
+#-----CLASS v2.6.3 (branch: , hash: )-----
+
+#Archivo para restringir SFDM con un campo escalar usando observaciones para MPS, BAO, BBN y SN.
+#Potencial cuadratico.
+#ly_alpha_2019 - Constricciones al MPS.
+#eBOSS_DR14_Lya_combined_data - BAO de lya.
+#bao_boss_dr12 - BAO de galaxias.
+#bao_smallz_2014 - BAO de galaxias que complementa al anterior.
+#cmb_baryon - Likelihood_prior gaussiano para bariones - BBN.
+#Pantheon - Supernovas.
+
+
+#---------------Experiments------------------#
+data.experiments = ['ly_alpha_2019', 'eBOSS_DR14_Lya_combined', 'bao_boss_dr12', 'bao_smallz_2014', 'cmb_baryon', 'Pantheon']
+
+
+#---------------Cosmological parameters list------------------#
+#SFDM1 parameters.
+data.parameters['Omega_sfdm_1']         = [0.3, 0., 1.0, 0.05 ,1, 'cosmo']
+
+data.parameters['sfdm_parameters_1__1'] = [-20., -24., -17., 0.1, 1, 'cosmo']
+data.parameters['sfdm_parameters_1__2'] = [0., 1., 6., 0.0, 1,'cosmo']
+data.parameters['sfdm_parameters_1__3'] = [1., None, None, 0., 1,'cosmo']
+data.parameters['sfdm_parameters_1__4'] = [3., None, None, 0., 1,'cosmo']
+data.parameters['sfdm_parameters_1__5'] = [1.e-30, None, None, 0., 1,'cosmo']
+
+#Priors obtenidos de la tabla 1, arXiv 1303.5076 sugerido por 1807.06209
+data.parameters['omega_b']      = [  2.2377,   0.5, 10.0,      0.015, 0.01, 'cosmo']
+#data.parameters['100*theta_s']  = [ 1.04110,   0.5, 10.0,    0.00030,    1, 'cosmo']
+data.parameters['H0']           = [    60.0,  20.0, 100.0,        0.1,   1, 'cosmo' ]
+
+#---------------Nuisance parameters list------------------#
+# Nuisance parameter list, same call, except the name does not have to be a class name
+#Pantheon
+data.parameters['M']                 = [-19.02, None, None, 0.004,  1, 'nuisance']
+
+#---------------Derived parameters list------------------#
+
+data.parameters['Omega_Lambda']    = [1, None, None, 0,     1,   'derived']
+#data.parameters['H0']              = [0, None, None, 0,     1,   'derived']
+data.parameters['Omega_m']         = [0, None, None, 0,     1,   'derived']
+
+#---------------Other parameters list------------------#
+# Other cosmo parameters (fixed parameters, precision parameters, etc.)
+
+# These fixed values were obtained from Planck 18 1807.06209
+# Except Omega_cdm which value is required for the SFDM formalism
+# The base model features two massless
+# and one massive neutrino with m=0.06eV.
+# The settings below ensures that Neff=3.046
+# and m/omega = 93.14 eV
+data.cosmo_arguments['N_ur']         = 2.0328
+data.cosmo_arguments['N_ncdm']       = 1
+data.cosmo_arguments['m_ncdm']       = 0.06
+data.cosmo_arguments['T_ncdm']       = 0.71611
+data.cosmo_arguments['T_cmb']        = 2.7255
+data.cosmo_arguments['Omega_cdm']    = 0.0001
+data.cosmo_arguments['ln10^{10}A_s'] = 3.0448
+data.cosmo_arguments['n_s']          = 0.96605
+data.cosmo_arguments['tau_reio']     = 0.054
+
+#SFDM1 parameters
+data.cosmo_arguments['attractor_ic_sfdm_1'] = 'yes'
+data.cosmo_arguments['sfdm_tuning_index_1'] = 2
+
+#SFDM2 parameters
+data.cosmo_arguments['Omega_sfdm_2']    = 0.0
+
+# These two are required to get sigma8 as a derived parameter
+# (class must compute the P(k) until sufficient k)
+data.cosmo_arguments['output'] = 'mPk'
+data.cosmo_arguments['P_k_max_h/Mpc'] = 7.
+
+#------ Mcmc parameters ----
+
+data.N=10
+data.write_step=5
+
+
+#-----Likelihood-ly_alpha_2019-----
+ly_alpha_2019.data_file = 'lya_data_2019.txt'
+ly_alpha_2019.use_lya2019 = True
+ly_alpha_2019.data_directory = '/home/osvaldo/Documentos/montepython_public-3.3/data/ly_alpha_2019'
+
+
+#-----Likelihood-eBOSS_DR14_Lya_combined-----
+eBOSS_DR14_Lya_combined.data_directory = '/home/osvaldo/Documentos/montepython_public-3.3/data'
+eBOSS_DR14_Lya_combined.cf_scan = 'eBOSS_DR14_scans/eBOSS_DR14_Lya_combined_scan.dat'
+eBOSS_DR14_Lya_combined.rd_rescale = 1.0
+eBOSS_DR14_Lya_combined.transverse_fid = 39.26
+eBOSS_DR14_Lya_combined.file = 'eBOSS_DR14_scans/eBOSS_DR14_scan_aux.txt'
+eBOSS_DR14_Lya_combined.parallel_fid = 8.581
+
+
+#-----Likelihood-bao_boss_dr12-----
+bao_boss_dr12.data_file = 'COMBINEDDR12_BAO_consensus_dM_Hz/BAO_consensus_results_dM_Hz.txt'
+bao_boss_dr12.rd_fid_in_Mpc = 147.78
+bao_boss_dr12.cov_file = 'COMBINEDDR12_BAO_consensus_dM_Hz/BAO_consensus_covtot_dM_Hz.txt'
+bao_boss_dr12.data_directory = '/home/osvaldo/Documentos/montepython_public-3.3/data'
+bao_boss_dr12.rs_rescale = 1.0
+
+
+#-----Likelihood-bao_smallz_2014-----
+bao_smallz_2014.exclude = []
+bao_smallz_2014.file = 'bao_smallz_2014.txt'
+bao_smallz_2014.data_directory = '/home/osvaldo/Documentos/montepython_public-3.3/data'
+
+
+#-----Likelihood-cmb_baryon-----
+cmb_baryon.omega_b = 0.0224
+cmb_baryon.sigma = 0.0001
+
+
+#-----Likelihood-Pantheon-----
+Pantheon.use_nuisance = ['M']
+Pantheon.conflicting_experiments = ['JLA_simple', 'JLA']
+Pantheon.data_directory = '/home/osvaldo/Documentos/montepython_public-3.3/data/Pantheon'
+Pantheon.settings = 'pantheon.dataset'
+
+
+#-----------Cosmological-arguments---------
+data.cosmo_arguments.update({'output': 'mPk', 'P_k_max_h/Mpc': 7.0, 'ln10^{10}A_s': 3.0448, 'N_ur': 2.0328, 'attractor_ic_sfdm_1': 'yes', 'm_ncdm': 0.06, 'Omega_cdm': 0.0001, 'sfdm_tuning_index_1': 2, 'tau_reio': 0.054, 'N_ncdm': 1, 'T_ncdm': 0.71611, 'n_s': 0.96605, 'T_cmb': 2.7255, 'Omega_sfdm_2': 0.0})
+
+
+#--------Default-Configuration------
+data.path['cosmo']	= '/home/osvaldo/Documentos/class_m2_cos_cosh/class_public'
+data.path['root']	= '/home/osvaldo/Documentos/montepython_public-3.3'
+data.path['data']	= '/home/osvaldo/Documentos/montepython_public-3.3/data'
+data.path['clik']	= '/home/osvaldo/Documentos/planck/code/plc_3.0/plc-3.01'
+data.path['MontePython']	= '/home/osvaldo/Documentos/montepython_public-3.3/montepython'
